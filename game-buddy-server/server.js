@@ -74,6 +74,11 @@ app.post('/api/gemini', async (req, res) => {
 });
 
 // 6. Start the server
-app.listen(PORT, () => {
-    console.log(`Server running securely on http://localhost:${PORT}`);
+const HOST = '0.0.0.0';
+// Use Render's assigned port (process.env.PORT) or default to the local PORT (3000)
+const RENDER_PORT = process.env.PORT || PORT; 
+
+app.listen(RENDER_PORT, HOST, () => {
+    // The server must listen on 0.0.0.0 for Render to expose it correctly.
+    console.log(`Server running securely on ${HOST}:${RENDER_PORT}`); 
 });
