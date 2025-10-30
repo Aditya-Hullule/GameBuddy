@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Buddy</title>
+    <link rel="stylesheet" href="style.css"> 
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+
+    <header class="bg-gray-900/80 shadow-lg sticky top-0 z-30 backdrop-blur-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-white tracking-tighter">
+                <a href="#" id="home-link" class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-500">Game Buddy</a>
+            </h1>
+            <div class="w-full max-w-xs">
+                <input type="text" id="search-bar" class="w-full bg-gray-800 text-white border-2 border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all" placeholder="Search for any game...">
+            </div>
+        </div>
+    </header>
+
+    <div id="app-content">
+        <div id="filters-section" class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-gray-800/50 rounded-lg my-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label for="sort-by" class="block text-sm font-medium text-gray-400 mb-1">Sort By</label>
+                    <select id="sort-by" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div>
+                    <label for="store-filter" class="block text-sm font-medium text-gray-400 mb-1">Store</label>
+                    <select id="store-filter" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div>
+                    <label for="genre-filter" class="block text-sm font-medium text-gray-400 mb-1">Genre</label>
+                    <select id="genre-filter" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div>
+                    <label for="price-filter" class="block text-sm font-medium text-gray-400 mb-1">Max Price ($)</label>
+                    <input type="number" id="price-filter" class="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g., 20">
+                </div>
+                <button id="reset-filters-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md text-center transition-colors">Reset</button>
+            </div>
+        </div>
+
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="loader" class="flex justify-center items-center h-64">
+                <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-700 h-32 w-32"></div>
+            </div>
+            <div id="deals-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+            <div id="no-results" class="hidden text-center text-gray-500 mt-8">
+                <h3 class="text-2xl font-semibold">No deals found.</h3>
+                <p>Try a different search term or adjust your filters.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="info-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40 p-4 modal-enter">
+        <div class="modal-content bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold text-white" id="info-modal-title">Game Insights</h3>
+                    <button id="close-info-modal-btn" class="text-gray-500 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="border-b border-gray-700 mt-4">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button class="tab-btn py-4 px-1 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="summary">Summary</button>
+                        <button class="tab-btn py-4 px-1 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="pros-cons">Pros & Cons</button>
+                        <button class="tab-btn py-4 px-1 text-sm font-medium text-gray-400 hover:text-gray-200" data-tab="similar">Similar Games</button>
+                    </nav>
+                </div>
+                
+                <div id="info-content" class="mt-4 text-gray-300 min-h-[200px] relative">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="all-deals-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-40 p-4 modal-enter">
+        <div class="modal-content bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <h3 class="text-2xl font-bold text-white" id="all-deals-modal-title">All Available Deals</h3>
+                    <button id="close-all-deals-modal-btn" class="text-gray-500 hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div id="all-deals-content" class="mt-4 text-gray-300 max-h-[60vh] overflow-y-auto">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 mt-12 py-6 border-t border-gray-800">
+        <div class="container mx-auto text-center text-gray-500">
+            <p>&copy; 2025 Game Buddy. All rights reserved.</p>
+            </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
