@@ -24,13 +24,14 @@ const closeAllDealsModalBtn = allDealsModal.querySelector('#close-all-deals-moda
 let storeInfo = {};
 let geminiCache = {};
 let activeGameTitle = '';
+const PROXY_BASE_URL = 'https://game-buddy.onrender.com';
 
 // --- Core App Logic ---
 
 async function fetchStoresAndFilters() {
     // Fetch Store Info
     try {
-        const response = await fetch('https://www.cheapshark.com/api/1.0/stores');
+        const response = await fetch(`${PROXY_BASE_URL}/api/cheapshark?resource=stores`);
         const stores = await response.json();
         storeFilterEl.innerHTML = '<option value="">All Stores</option>';
         stores.forEach(store => {
@@ -70,13 +71,18 @@ async function fetchDeals() {
         titleQuery = titleQuery ? `${titleQuery} ${genre}` : genre;
     }
 
-    let url = `https://www.cheapshark.com/api/1.0/deals?onSale=1&pageSize=30&sortBy=${sortBy}`;
-    if (titleQuery) url += `&title=${encodeURIComponent(titleQuery)}`;
-    if (storeID) url += `&storeID=${storeID}`;
-    if (upperPrice) url += `&upperPrice=${upperPrice}`;
+    // 1. Start building the URL parameters string with the required 'resource' type
+    let params = `resource=deals&onSale=1&pageSize=30&sortBy=${sortBy}`;
+    
+    // 2. Add all optional parameters to the 'params' string
+    if (titleQuery) params += `&title=${encodeURIComponent(titleQuery)}`;
+    if (storeID) params += `&storeID=${storeID}`;
+    if (upperPrice) params += `&upperPrice=${upperPrice}`;
 
     try {
-        const response = await fetch(url);
+        // 3. Call the proxy server using the PROXY_BASE_URL and the full parameters string
+        const response = await fetch(`${PROXY_BASE_URL}/api/cheapshark?${params}`); 
+        
         let deals = await response.json();
         displayDeals(deals);
     } catch (error) {
@@ -149,7 +155,7 @@ function setContentLoading(element) {
 
 async function callGeminiAPI(prompt) {
     // 1. Define the endpoint of YOUR local proxy server
-    const proxyUrl = '${PROXY_BASE_URL}/api/gemini'; 
+    const proxyUrl = `${PROXY_BASE_URL}/api/gemini`; 
 
     // 2. The API key is NO longer used or needed here!
 
@@ -251,7 +257,7 @@ async function showAllDeals(gameID, title) {
     setContentLoading(allDealsContent);
 
     try {
-        const response = await fetch(`https://www.cheapshark.com/api/1.0/games?id=${gameID}`);
+        const response = await fetch(`${PROXY_BASE_URL}/api/cheapshark?resource=games&id=${gameID}`);
         const data = await response.json();
         
         let dealsHtml = '<div class="space-y-3">';
