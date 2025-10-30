@@ -14,9 +14,21 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
+const allowedOrigins = [
+    'http://localhost:5500', // Still useful for local testing
+    'http://127.0.0.1:5500',
+    'https://graceful-biscochitos-b238a6.netlify.app' // <--- YOUR NETLIFY DOMAIN
+];
 // Allow requests from your front-end origin (adjust if needed, but this works for local testing)
 app.use(cors({
-    origin: '*' // You can restrict this to 'http://127.0.0.1:5500' or similar if your front-end uses a specific port
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or local files) or requests from the allowed list
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
 }));
 app.use(express.json()); // Allows the server to parse JSON bodies
 
